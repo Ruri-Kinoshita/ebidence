@@ -158,7 +158,7 @@ class _QuizState extends ConsumerState<Quiz1> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
-                    '英語　LEVEL1',
+                    '英語',
                     style: TextStyle(fontSize: 30),
                   ),
                   const SizedBox(height: 30),

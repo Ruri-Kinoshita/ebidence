@@ -41,7 +41,6 @@ class QuizData {
     'ラッコ': 'sea otter',
     'トビウオ': 'flying fish',
     'ダンゴウオ': 'lumpsucker',
-    'ハナイカ': 'flamboyant cuttlefish',
     'フサカサゴ': 'lionfish',
     'クモガニ': 'spider crab',
     'ウミサソリ': 'sea scorpion',
@@ -56,7 +55,6 @@ class QuizData {
     'ムールガイ': 'mussel',
     'イシガキダイ': 'spotted knifejaw',
     'ミノカサゴ': 'scorpionfish',
-    'コペポーダ': 'copepod (scientific term)',
     'テッポウエビ': 'pistol shrimp',
     'ミズムシ': 'water louse',
   };

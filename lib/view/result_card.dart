@@ -372,7 +372,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                               Column(
                                 children: [
                                   Image.asset(
-                                    'images/evi_cam.png',
+                                    'images/aor_real_tag.png',
                                     height: 238,
                                   ),
                                 ],
@@ -475,14 +475,26 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                       Center(
                         child: Column(
                           children: [
-                            const Text(
-                              '口角あがっちゃうでやんすw',
-                              style: TextStyle(fontSize: 30),
-                            ),
-                            const Text(
-                              '甲殻類だけにw',
-                              style: TextStyle(fontSize: 30),
-                            ),
+                            if (isPostCancel == false) ...[
+                              const Text(
+                                '口角あがっちゃうでんすw',
+                                style: TextStyle(fontSize: 30),
+                              ),
+                              const Text(
+                                '甲殻類だけにw',
+                                style: TextStyle(fontSize: 30),
+                              ),
+                            ],
+                            if (isPostCancel == true) ...[
+                              const Text(
+                                'ボタン壊れてるでんすw',
+                                style: TextStyle(fontSize: 30),
+                              ),
+                              const Text(
+                                'ポストするしかないでんすw',
+                                style: TextStyle(fontSize: 30),
+                              ),
+                            ],
                             Center(
                               child: Image.memory(
                                 snapshot.data!,
@@ -529,7 +541,10 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                 ),
                 child: IconButton(
                   onPressed: () {
-                    isPostCancel = true;
+                    setState(() {
+                      isPostCancel = true;
+                    });
+                    // isPostCancel = true;
                     debugPrint('Postをキャンセルしようとしてる');
                   },
                   icon: const Icon(

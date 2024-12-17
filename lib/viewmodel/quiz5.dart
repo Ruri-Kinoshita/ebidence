@@ -159,7 +159,7 @@ class _QuizState extends ConsumerState<Quiz5> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
-                    '英語　LEVEL1',
+                    '英語',
                     style: TextStyle(fontSize: 30),
                   ),
                   const SizedBox(height: 30),
@@ -292,7 +292,7 @@ class _QuizState extends ConsumerState<Quiz5> with TickerProviderStateMixin {
                 alignment: Alignment(0.9, 1),
                 child: Gif(
                   controller: _gifController,
-                  image: AssetImage('assets/gifs/aor_$_randomGifName.gif'),
+                  image: AssetImage('assets/gifs/aor_real.gif'),
                   width: 325,
                   height: 325,
                   fit: BoxFit.contain,

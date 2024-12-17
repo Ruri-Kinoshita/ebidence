@@ -7,7 +7,6 @@ class Aor {
     'grgr',
     'loser',
     'm9',
-    'real',
     'renz',
     'tri'
   ];
