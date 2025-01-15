@@ -1,7 +1,6 @@
 import 'package:ebidence/view/developer/send_firebase.dart';
 import 'package:ebidence/view/result.dart';
 import 'package:ebidence/view/result_card.dart';
-import 'package:ebidence/view/result_card_row.dart';
 import 'package:ebidence/view/select_subject_page.dart';
 import 'package:ebidence/view/start_page.dart';
 import 'package:ebidence/viewmodel/quiz.dart';

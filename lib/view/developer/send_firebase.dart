@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class SendFirebase extends StatefulWidget {
@@ -90,13 +89,17 @@ class _SendFirebaseState extends State<SendFirebase> {
       debugPrint('Firestoreに保存したドキュメントID: ${docRef.id}');
       debugPrint('保存した画像名: ${containerRef.name}');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('保存成功！ドキュメントID: ${docRef.id}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('保存成功！ドキュメントID: ${docRef.id}')),
+        );
+      }
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('エラー: ${e.message}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('エラー: ${e.message}')),
+        );
+      }
     }
   }
 
@@ -124,7 +127,7 @@ class _SendFirebaseState extends State<SendFirebase> {
                       height: 100,
                       fit: BoxFit.cover,
                     ),
-                    Center(
+                    const Center(
                       child: Text(
                         'Hello, World!',
                         style: TextStyle(color: Colors.white, fontSize: 20),
@@ -143,7 +146,7 @@ class _SendFirebaseState extends State<SendFirebase> {
               onPressed: _docId == null
                   ? null
                   : () {
-                      router.go('/result/${_docId}', extra: _docId);
+                      router.go('/result/$_docId', extra: _docId);
                     },
               child: const Text('結果画面に遷移'),
             ),

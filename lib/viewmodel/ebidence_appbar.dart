@@ -75,10 +75,10 @@ class EbidenceAppbar extends StatelessWidget {
                       alignment: const Alignment(0.3, 100),
                       child: Column(
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 50,
                           ),
-                          Text(
+                          const Text(
                             '説明',
                             style: TextStyle(fontSize: 40),
                           ),
@@ -122,13 +122,13 @@ class EbidenceAppbar extends StatelessWidget {
                       ),
                     ),
                     Align(
-                      alignment: Alignment(0.45, -0.83),
+                      alignment: const Alignment(0.45, -0.83),
                       child: IconButton(
                           style: buttonStyle2,
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          icon: Icon(Icons.clear)),
+                          icon: const Icon(Icons.clear)),
                     ),
                   ]);
                 },

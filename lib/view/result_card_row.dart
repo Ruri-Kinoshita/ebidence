@@ -28,20 +28,20 @@ class _ResultCardRowState extends ConsumerState<ResultCardRow> {
           Center(
             child: Column(
               children: [
-                Text(
+                const Text(
                   '結果',
                   style: TextStyle(fontSize: 35),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: SizedBox()),
+                    const Expanded(child: SizedBox()),
                     Center(
                       child: Text(
                         (5 - resultCardList.length).toString(),
                         style: TextStyle(
                           fontSize: 150,
-                          fontFamily: 'NotoSansJP-Bold',
+                          fontWeight: FontWeight.bold,
                           color: AppColor.text.black,
                         ),
                       ),
@@ -50,14 +50,14 @@ class _ResultCardRowState extends ConsumerState<ResultCardRow> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 90,
                           ),
                           Text(
                             '問正解！',
                             style: TextStyle(
                               fontSize: 30,
-                              fontFamily: 'NotoSansJP-Bold',
+                              fontWeight: FontWeight.bold,
                               color: AppColor.text.black,
                             ),
                           ),
@@ -90,7 +90,7 @@ class _ResultCardRowState extends ConsumerState<ResultCardRow> {
                                     color: Colors.white,
                                   ),
                                   child: Padding(
-                                    padding: EdgeInsets.all(5),
+                                    padding: const EdgeInsets.all(5),
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -114,7 +114,7 @@ class _ResultCardRowState extends ConsumerState<ResultCardRow> {
                                     ),
                                   ),
                                 ),
-                                if (i < 4) SizedBox(width: 10),
+                                if (i < 4) const SizedBox(width: 10),
                               ],
                             ],
                           ),
@@ -145,7 +145,7 @@ class _ResultCardRowState extends ConsumerState<ResultCardRow> {
                       label: 'つづける',
                       onPressed: () {
                         router.go('/startpage');
-                        print('つづけるボタンが押されました');
+                        debugPrint('つづけるボタンが押されました');
                       },
                     ),
                     const SizedBox(width: 20), // ボタン間のスペース
@@ -153,7 +153,7 @@ class _ResultCardRowState extends ConsumerState<ResultCardRow> {
                       label: 'やめる',
                       onPressed: () {
                         router.go('/');
-                        print('やめるボタンが押されました');
+                        debugPrint('やめるボタンが押されました');
                       },
                     ),
                   ],

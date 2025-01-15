@@ -9,13 +9,13 @@ class OgpLink extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Text('OgpLink'),
-          Image(image: AssetImage('assets/images/lgtm_cat.gif')),
+          const Text('OgpLink'),
+          const Image(image: AssetImage('assets/images/lgtm_cat.gif')),
           TextButton(
               onPressed: (() {
                 context.go('/result');
               }),
-              child: Text('遷移ボタン')),
+              child: const Text('遷移ボタン')),
         ],
       ),
     );

@@ -13,7 +13,6 @@ class ResultPage1 extends ConsumerWidget {
     final selectedQuestions = ref.read(quizProvider);
 
     final double deviceHeight = MediaQuery.of(context).size.height;
-    final double deviceWidth = MediaQuery.of(context).size.width;
 
     debugPrint('選ばれた問題: $selectedQuestions');
     debugPrint('クイズ結果: $quizResults');
@@ -23,10 +22,10 @@ class ResultPage1 extends ConsumerWidget {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(deviceHeight / 5),
           child: const EbidenceAppbar()),
-      body: Center(
+      body: const Center(
         child: Stack(
           children: [
-            const Text(
+            Text(
               'お疲れさまでした！',
               style: TextStyle(fontSize: 24),
             ),

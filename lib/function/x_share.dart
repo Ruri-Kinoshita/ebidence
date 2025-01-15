@@ -9,13 +9,13 @@ class XShare extends StatelessWidget {
   final String related;
 
   const XShare({
-    Key? key,
+    super.key,
     required this.text,
     this.url = "",
     this.hashtags = const [],
     this.via = "",
     this.related = "",
-  }) : super(key: key);
+  });
 
   Future<void> _tweet() async {
     // Twitterアプリを開くためのURIスキーム
@@ -51,9 +51,9 @@ class XShare extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      child: Icon(Icons.share),
       backgroundColor: Colors.lightBlueAccent,
       onPressed: _tweet,
+      child: const Icon(Icons.share),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:ebidence/storage/gamestate/game_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 class GameDataHandler {
   // データを保存
@@ -10,7 +11,7 @@ class GameDataHandler {
       final jsonString = jsonEncode(gameState.toJson());
       await prefs.setString('gameState', jsonString);
     } catch (e) {
-      print("Error saving game state: $e");
+      debugPrint("Error saving game state: $e");
     }
   }
 
@@ -53,15 +54,15 @@ class GameDataHandler {
 
     // 読み込んだデータを出力
     if (loadedState != null) {
-      print("isGameActive: ${loadedState.isGameActive}");
-      print("qNum: ${loadedState.qNum}");
-      print("qList: ${loadedState.qList}");
-      print("score: ${loadedState.score}");
-      print("answerHistory: ${loadedState.answerHistory}");
-      print(
+      debugPrint("isGameActive: ${loadedState.isGameActive}");
+      debugPrint("qNum: ${loadedState.qNum}");
+      debugPrint("qList: ${loadedState.qList}");
+      debugPrint("score: ${loadedState.score}");
+      debugPrint("answerHistory: ${loadedState.answerHistory}");
+      debugPrint(
           "wrongQuestions: ${loadedState.qWrongList.map((wrong) => "Q${wrong.questionIndex}: ${wrong.wrongAnswer}").toList()}");
     } else {
-      print("ゲーム状態が保存されていません。");
+      debugPrint("ゲーム状態が保存されていません。");
     }
   }
 }

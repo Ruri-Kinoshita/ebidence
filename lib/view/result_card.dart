@@ -26,7 +26,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
   late List<Quiz> resultCardList;
   late int currentIndex;
   late bool isExistCards;
-  bool? isSaveImage; //TODO ローディングやってね！！！
+  bool? isSaveImage;
   bool isPostPush = false;
   bool isPostX = false;
   bool isPostCancel = false;
@@ -44,7 +44,6 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
   final GlobalKey _repaintBoundaryKey = GlobalKey();
 
   // FirestoreのドキュメントIDを保持する変数
-  String? _docId;
   String? imageUrl;
 
   @override
@@ -115,10 +114,6 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
           .collection('images')
           .add({'url': downloadUrl});
 
-      setState(() {
-        _docId = docRef.id; // ドキュメントIDを状態変数に保存
-      });
-
       debugPrint('Firestoreに保存したドキュメントID: ${docRef.id}');
       debugPrint('保存した画像名: ${containerRef.name}');
 
@@ -129,9 +124,11 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
       // );
       isSaveImage = true;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('エラー: ${e.message}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('エラー: ${e.message}')),
+        );
+      }
     }
   }
 
@@ -147,7 +144,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
       "/intent/tweet",
       {
         "text": 'クスクス、こんなのも分からないの～？🦐\n勉強不足なんじゃな～い？もっと頑張れ～！🦐\n',
-        "url": 'https://ebidence-gbc.web.app/result/${imageId}\n',
+        "url": 'https://ebidence-gbc.web.app/result/$imageId\n',
         "hashtags": ['p2hacks'],
         "via": '',
         "related": '',
@@ -346,7 +343,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
           //最終結果画面の処理↓
           const ResultCardRow(),
           //全問不正解用の吹き出しの処理↓
-          if (resultCardList.length == 5) _wrongSpeachBubble(),
+          if (resultCardList.length == 5 && !isPostX) _wrongSpeachBubble(),
           Align(
             alignment: const Alignment(0.9, 1),
             child: Image.asset(
@@ -457,9 +454,11 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                               ? () {
                                   try {
                                     //isPostPush = true;
-                                    print('imageId:${imageId}');
+                                    debugPrint('imageId:$imageId');
                                     _tweet();
-                                    print('ポストするを押した');
+                                    setState(() {
+                                      isPostX = true;
+                                    });
                                   } catch (e) {
                                     debugPrint("エラー発生: $e");
                                   }

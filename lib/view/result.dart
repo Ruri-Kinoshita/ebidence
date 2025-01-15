@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class ResultPage extends StatelessWidget {
   final String imageId;
 
-  ResultPage({super.key, required this.imageId});
+  const ResultPage({super.key, required this.imageId});
 
   Future<Uint8List> _downloadImage() async {
     try {
@@ -44,7 +44,7 @@ class ResultPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            print(snapshot.error);
+            debugPrint(snapshot.error.toString());
             return const Center(child: Text('エラーが発生しました'));
           }
           if (!snapshot.hasData) {
@@ -57,12 +57,12 @@ class ResultPage extends StatelessWidget {
                 Image.memory(
                   snapshot.data!,
                 ),
-                // _buildCustomButton(
-                //   label: 'はじめる',
-                //   onPressed: () {
-                //     router.go('/startpage');
-                //   },
-                // ),
+                _buildCustomButton(
+                  label: 'はじめる',
+                  onPressed: () {
+                    router.go('/startpage');
+                  },
+                ),
               ],
             ),
           );

@@ -85,7 +85,7 @@ class _StartPageState extends State<StartPage> {
                         },
                         child: const Text("START"),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 245,
                       ),
                       ElevatedButton(

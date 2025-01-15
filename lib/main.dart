@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColor.brand.primary),
         fontFamily: 'Inter',
-        fontFamilyFallback: ['NotoSansJP'],
+        fontFamilyFallback: const ['NotoSansJP'],
         useMaterial3: true,
       ),
       routerConfig: router,

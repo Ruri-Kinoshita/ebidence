@@ -131,7 +131,7 @@ class _WrongStorageState extends State<WrongStorage> {
                     'Words with Wrong Count as Multiples of 3:',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  ..._multiplesOfThreeWords.map((word) => Text(word)).toList(),
+                  ..._multiplesOfThreeWords.map((word) => Text(word)),
                 ],
               ),
             ),

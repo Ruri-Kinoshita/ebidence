@@ -19,6 +19,35 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
   int tapCount = 0; // タップ回数をカウントする変数
   bool isHukidashiVisible = false; // hukidashi_big.png が表示中かを管理するフラグ
 
+  void startGame(String mode) {
+    ref.read(modeProvider.notifier).state = mode;
+    ref.read(quizResultProvider.notifier).state = [];
+
+    if (mode == "ebimode") {
+      // 全ての問題リストを取得
+      final allEbiQuestions = QuizData.ebiQuiz;
+
+      // 5つのランダムな問題を生成してリバーポッドに保存
+      ref
+          .read(quizProvider.notifier)
+          .generateRandomQuestions(allEbiQuestions, 5);
+    } else if (mode == "level1mode") {
+      // 全ての問題リストを取得
+      final allL1Questions = QuizData.l1Quiz;
+
+      // 5つのランダムな問題を生成してリバーポッドに保存
+      ref
+          .read(quizProvider.notifier)
+          .generateRandomQuestions(allL1Questions, 5);
+    }
+
+    // ランダムに選ばれた問題をデバッグプリント
+    final selectedQuestions = ref.read(quizProvider);
+    ref.read(currentQuestionIndexProvider.notifier).state = 0;
+    debugPrint("ランダムに選ばれた問題: $selectedQuestions");
+    router.go('/quiz/0');
+  }
+
   void _incrementTapCount(BuildContext context) {
     if (!isHukidashiVisible) return; // フラグが false の場合は処理を中断
     final double deviceHeight = MediaQuery.of(context).size.height;
@@ -58,8 +87,8 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                   fit: BoxFit.contain,
                 ),
               ),
-              Align(
-                alignment: const Alignment(0.3, 100),
+              const Align(
+                alignment: Alignment(0.3, 100),
                 child: Column(
                   children: [],
                 ),
@@ -79,23 +108,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                         backgroundColor: Colors.white,
                       ),
                       onPressed: () {
-                        // モードを保存
-                        ref.read(modeProvider.notifier).state = 'ebimode';
-
-                        // 全ての問題リストを取得
-                        final allEbiQuestions = QuizData.ebiQuiz;
-
-                        // 5つのランダムな問題を生成してリバーポッドに保存
-                        ref
-                            .read(quizProvider.notifier)
-                            .generateRandomQuestions(allEbiQuestions, 5);
-
-                        // ランダムに選ばれた問題をデバッグプリント
-                        final selectedQuestions = ref.read(quizProvider);
-                        ref.read(currentQuestionIndexProvider.notifier).state =
-                            0;
-                        print("ランダムに選ばれた問題: $selectedQuestions");
-                        router.go('/quiz/0');
+                        startGame('ebimode');
                       },
                       child: const Text(
                         'LEVEL EBI',
@@ -194,8 +207,8 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                                 fit: BoxFit.contain,
                               ),
                             ),
-                            Align(
-                              alignment: const Alignment(0.3, 100),
+                            const Align(
+                              alignment: Alignment(0.3, 100),
                               child: Column(
                                 children: [],
                               ),
@@ -216,28 +229,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                                       backgroundColor: Colors.white,
                                     ),
                                     onPressed: () {
-                                      // モードを保存
-                                      ref.read(modeProvider.notifier).state =
-                                          'level1mode';
-
-                                      // 全ての問題リストを取得
-                                      final allL1Questions = QuizData.l1Quiz;
-
-                                      // 5つのランダムな問題を生成してリバーポッドに保存
-                                      ref
-                                          .read(quizProvider.notifier)
-                                          .generateRandomQuestions(
-                                              allL1Questions, 5);
-
-                                      // ランダムに選ばれた問題をデバッグプリント
-                                      final selectedQuestions =
-                                          ref.read(quizProvider);
-                                      ref
-                                          .read(currentQuestionIndexProvider
-                                              .notifier)
-                                          .state = 0;
-                                      print("ランダムに選ばれた問題: $selectedQuestions");
-                                      router.go('/quiz/0');
+                                      startGame('level1mode');
                                     },
                                     child: const Text(
                                       'LEVEL 1',
