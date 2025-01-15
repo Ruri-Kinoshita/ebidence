@@ -60,13 +60,13 @@ class EbidenceAppbar extends StatelessWidget {
                     Align(
                         alignment: const Alignment(0.9, 1),
                         child: Image.asset(
-                          'images/evi_cam.png',
+                          'assets/images/evi_cam.png',
                           width: 325,
                           height: 325,
                         )),
                     Center(
                         child: Image.asset(
-                      'images/hukidashi_big.png',
+                      'assets/images/hukidashi_big.png',
                       width: 900,
                       height: 700,
                       fit: BoxFit.contain,
@@ -85,7 +85,7 @@ class EbidenceAppbar extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset('images/shoukai.png'),
+                              Image.asset('assets/images/shoukai.png'),
                               const Column(
                                 children: [
                                   SizedBox(

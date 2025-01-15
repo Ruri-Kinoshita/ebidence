@@ -122,7 +122,9 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
       // ScaffoldMessenger.of(context).showSnackBar(
       //   SnackBar(content: Text('保存成功！ドキュメントID: ${docRef.id}')),
       // );
-      isSaveImage = true;
+      setState(() {
+        isSaveImage = true;
+      });
     } on FirebaseException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -235,7 +237,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                                           ),
                                         ),
                                         Image.asset(
-                                          'images/ebidence_title.png',
+                                          'assets/images/ebidence_title.png',
                                           height: 80,
                                         ),
                                       ],
@@ -320,7 +322,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                               Column(
                                 children: [
                                   Image.asset(
-                                    'images/aor_real_tag.png',
+                                    'assets/images/aor_real_tag.png',
                                     height: 238,
                                   ),
                                 ],
@@ -347,7 +349,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
           Align(
             alignment: const Alignment(0.9, 1),
             child: Image.asset(
-              'images/evi_cam.png',
+              'assets/images/evi_cam.png',
               width: deviceWidth / 3.5,
             ),
           ),

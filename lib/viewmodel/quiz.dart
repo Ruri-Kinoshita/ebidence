@@ -36,6 +36,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen>
 
     // GifControllerを初期化
     _gifController = GifController(vsync: this);
+    _gifController.stop();
     _isGifInitialized = true;
     _gifController.addListener(() {
       if (_gifController.value == 1) {
@@ -53,6 +54,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen>
       isCheckTrue = null;
       _randomGifName = 'real';
       _gifController.reset();
+      _gifController.stop();
     });
   }
 
@@ -274,7 +276,6 @@ class _QuizScreenState extends ConsumerState<QuizScreen>
                 ),
               ),
             ],
-            const Spacer(),
           ],
         ),
       ),

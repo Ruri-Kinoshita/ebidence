@@ -73,7 +73,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                 child: GestureDetector(
                   onTap: () => _incrementTapCount(context), // タップでカウントを増やす
                   child: Image.asset(
-                    'images/evi_cam.png',
+                    'assets/images/evi_cam.png',
                     width: 325,
                     height: 325,
                   ),
@@ -81,7 +81,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
               ),
               Center(
                 child: Image.asset(
-                  'images/ebimode_hukidashi.png',
+                  'assets/images/ebimode_hukidashi.png',
                   width: 900,
                   height: 700,
                   fit: BoxFit.contain,
@@ -161,7 +161,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
             child: GestureDetector(
               onTap: () => _incrementTapCount(context), // タップでカウントを増やす
               child: Image.asset(
-                'images/evi_cam.png',
+                'assets/images/evi_cam.png',
                 width: 325,
                 height: 325,
               ),
@@ -193,7 +193,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                                 onTap: () =>
                                     _incrementTapCount(context), // タップでカウントを増やす
                                 child: Image.asset(
-                                  'images/evi_cam.png',
+                                  'assets/images/evi_cam.png',
                                   width: 325,
                                   height: 325,
                                 ),
@@ -201,7 +201,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                             ),
                             Center(
                               child: Image.asset(
-                                'images/hukidashi_big.png',
+                                'assets/images/hukidashi_big.png',
                                 width: 900,
                                 height: 700,
                                 fit: BoxFit.contain,
