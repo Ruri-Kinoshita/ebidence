@@ -1,15 +1,18 @@
 // quiz_provider.dart
-import 'package:ebidence/view/result_card.dart';
+import 'package:ebidence/constant/quiz_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final quizProvider = StateNotifierProvider<QuizNotifier, List<String>>((ref) {
+final quizProvider = NotifierProvider<QuizNotifier, List<Quiz>>(() {
   return QuizNotifier();
 });
 
-class QuizNotifier extends StateNotifier<List<String>> {
-  QuizNotifier() : super([]);
+class QuizNotifier extends Notifier<List<Quiz>> {
+  @override
+  List<Quiz> build() {
+    return [];
+  }
 
-  void generateRandomQuestions(List<String> allQuestions, int count) {
+  void generateRandomQuestions(List<Quiz> allQuestions, int count) {
     state = (allQuestions..shuffle()).take(count).toList();
   }
 }
@@ -17,19 +20,26 @@ class QuizNotifier extends StateNotifier<List<String>> {
 final currentQuestionIndexProvider =
     StateProvider<int>((ref) => 0); // 現在の問題のインデックスを管理
 
-final currentQuestionProvider = Provider<String>((ref) {
-  final index = ref.watch(currentQuestionIndexProvider);
-  final selectedQuestions = ref.watch(quizProvider);
-  return selectedQuestions.isNotEmpty ? selectedQuestions[index] : '';
-});
-
 final quizResultProvider = StateProvider<List<bool>>((ref) => []);
 
 // モードを保持するプロバイダー
 final modeProvider = StateProvider<String>((ref) => '');
 
 //間違えた問題のリストを保持
-final resultCardListProvider = StateProvider<List<ResultCard>>((ref) => []);
+final resultCardListProvider =
+    NotifierProvider<ResultCardListNotifier, List<Quiz>>(
+        () => ResultCardListNotifier());
+
+class ResultCardListNotifier extends Notifier<List<Quiz>> {
+  @override
+  List<Quiz> build() {
+    return [];
+  }
+
+  void setQuizList(List<Quiz> quizList) {
+    state = quizList;
+  }
+}
 
 //ロード中かどうかの判断
 final isSaveImageProvider = StateProvider<bool>((ref) => false);

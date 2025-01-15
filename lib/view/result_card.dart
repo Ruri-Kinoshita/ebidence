@@ -1,15 +1,12 @@
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidence/constant/app_color.dart';
 import 'package:ebidence/constant/quiz_data.dart';
-import 'package:ebidence/function/x_share.dart';
 import 'package:ebidence/provider/quiz_provider.dart';
 import 'package:ebidence/view/result_card_row.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:ebidence/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +23,7 @@ class ResultFlashCard extends ConsumerStatefulWidget {
 
 class _ResultFlashCard extends ConsumerState<ResultFlashCard>
     with SingleTickerProviderStateMixin {
-  late List<ResultCard> resultCardList;
+  late List<Quiz> resultCardList;
   late int currentIndex;
   late bool isExistCards;
   bool? isSaveImage; //TODO ローディングやってね！！！
@@ -39,6 +36,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
   List<String> hashtags = [];
   String via = '';
   String related = '';
+  Uint8List? image;
 
   final storageRef = FirebaseStorage.instance.ref();
   late Reference containerRef;
@@ -54,7 +52,6 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
     super.initState();
     _updateContainerRef();
     debugPrint('a');
-    debugPrint('b');
   }
 
   /// 現在のタイムスタンプを用いてReferenceを更新
@@ -99,6 +96,10 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
       // Containerを画像としてキャプチャ
       Uint8List containerImage = await _captureContainerAsImage();
 
+      setState(() {
+        image = containerImage;
+      });
+
       // Firebase Storage にアップロード
       await containerRef.putData(
           containerImage,
@@ -131,29 +132,6 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('エラー: ${e.message}')),
       );
-    }
-  }
-
-  Future<Uint8List> _downloadImage() async {
-    try {
-      //log("1");
-      final doc = await FirebaseFirestore.instance
-          .collection("images")
-          .doc(imageId)
-          .get();
-      //log("2");
-      final String imageUrl = doc.data()!['url']; // 'url'フィールド名を確認
-      //log("3");
-      final httpsReference = FirebaseStorage.instance.refFromURL(imageUrl);
-      //log("4");
-      const oneMegabyte = 1024 * 1024;
-      //log("5");
-      final Uint8List? data = await httpsReference.getData(oneMegabyte);
-      //log("6");
-      return data!;
-    } catch (e) {
-      //log(e.toString());
-      throw Exception('');
     }
   }
 
@@ -192,33 +170,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final quiz = ref.watch(quizProvider);
-    final resultCardList = ref.watch(resultCardListProvider); //List<ResultCard>
-    final quizResults = ref.watch(quizResultProvider); //List<bool>
-    final quizMode = ref.watch(modeProvider); //String
-
-    if (resultCardList.isEmpty && quiz.isNotEmpty && quizMode == 'ebimode') {
-      for (var i = 0; i < quiz.length; i++) {
-        if (quizResults[i] == false) {
-          resultCardList.add(ResultCard(
-            question: quiz[i],
-            answer: QuizData.ebiQuizData[quiz[i]].toString(),
-          ));
-          debugPrint(resultCardList.last.answer);
-        }
-      }
-    }
-
-    if (resultCardList.isEmpty && quiz.isNotEmpty && quizMode == 'level1mode') {
-      for (var i = 0; i < quiz.length; i++) {
-        if (quizResults[i] == false) {
-          resultCardList.add(ResultCard(
-            question: quiz[i],
-            answer: QuizData.l1QuizData[quiz[i]].toString(),
-          ));
-          debugPrint(resultCardList.last.answer);
-        }
-      }
-    }
+    final resultCardList = ref.watch(resultCardListProvider); //List<Quiz>
 
     return Scaffold(
       body: Stack(
@@ -337,7 +289,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                                                   MainAxisAlignment.center,
                                               children: [
                                                 Text(
-                                                  quiz[i],
+                                                  quiz[i].question,
                                                   //'あいうえお',
                                                   style: const TextStyle(
                                                       color: Colors.black,
@@ -348,8 +300,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                                                 ),
                                                 const SizedBox(height: 16),
                                                 Text(
-                                                  QuizData.ebiQuizData[quiz[i]]
-                                                      .toString(),
+                                                  quiz[i].answer,
                                                   //'aiueo',
                                                   style: const TextStyle(
                                                       color: Colors.red,
@@ -413,7 +364,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
       child: Stack(
         children: [
           Center(child: Image.asset('assets/images/hukidashi_big.png')),
-          if (isSaveImage != true) ...[
+          if (isSaveImage == null) ...[
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -437,7 +388,10 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
                           label: 'はい',
                           onPressed: () async {
                             try {
-                              await _uploadContainerImageAndSaveToFirestore();
+                              setState(() {
+                                isSaveImage = false;
+                              });
+                              _uploadContainerImageAndSaveToFirestore();
                             } catch (e) {
                               debugPrint("エラー発生: $e");
                             }
@@ -451,110 +405,98 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
               ),
             ),
           ] else if (isPostX == false) ...[
-            FutureBuilder(
-              future: _downloadImage(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  print(snapshot.error);
-                  return const Center(child: Text('エラーが発生しました'));
-                }
-                if (!snapshot.hasData) {
-                  return const Center(child: Text('画像が見つかりません'));
-                }
-
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Center(
-                        child: Column(
-                          children: [
-                            if (isPostCancel == false) ...[
-                              const Text(
-                                '口角あがっちゃうでんすw',
-                                style: TextStyle(fontSize: 30),
-                              ),
-                              const Text(
-                                '甲殻類だけにw',
-                                style: TextStyle(fontSize: 30),
-                              ),
-                            ],
-                            if (isPostCancel == true) ...[
-                              const Text(
-                                'ボタン壊れてるでんすw',
-                                style: TextStyle(fontSize: 30),
-                              ),
-                              const Text(
-                                'ポストするしかないでんすw',
-                                style: TextStyle(fontSize: 30),
-                              ),
-                            ],
-                            Center(
-                              child: Image.memory(
-                                snapshot.data!,
-                                width: 400,
-                                height: 200,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        children: [
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          _buildCustomButton(
-                            label: 'ポストする',
-                            onPressed: () {
-                              try {
-                                //isPostPush = true;
-                                print('imageId:${imageId}');
-                                _tweet();
-                                print('ポストするを押した');
-                              } catch (e) {
-                                debugPrint("エラー発生: $e");
-                              }
-                            },
-                          ),
-                          //Expanded(child: SizedBox())
-                        ],
-                      ),
-                    ],
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 20,
                   ),
-                );
-              },
+                  Center(
+                    child: Column(
+                      children: [
+                        if (isPostCancel == false) ...[
+                          const Text(
+                            '口角あがっちゃうでんすw',
+                            style: TextStyle(fontSize: 30),
+                          ),
+                          const Text(
+                            '甲殻類だけにw',
+                            style: TextStyle(fontSize: 30),
+                          ),
+                        ],
+                        if (isPostCancel == true) ...[
+                          const Text(
+                            'ボタン壊れてるでんすw',
+                            style: TextStyle(fontSize: 30),
+                          ),
+                          const Text(
+                            'ポストするしかないでんすw',
+                            style: TextStyle(fontSize: 30),
+                          ),
+                        ],
+                        Center(
+                          child: Image.memory(
+                            image!,
+                            width: 400,
+                            height: 200,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isSaveImage != null)
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        _buildCustomButton(
+                          label: 'ポストする',
+                          onPressed: (isSaveImage!)
+                              ? () {
+                                  try {
+                                    //isPostPush = true;
+                                    print('imageId:${imageId}');
+                                    _tweet();
+                                    print('ポストするを押した');
+                                  } catch (e) {
+                                    debugPrint("エラー発生: $e");
+                                  }
+                                }
+                              : null,
+                        ),
+                        //Expanded(child: SizedBox())
+                      ],
+                    ),
+                ],
+              ),
             ),
           ],
           Align(
-              alignment: const Alignment(0.33, -0.55),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.orange, // ボタンの背景色をオレンジに設定
-                  borderRadius: BorderRadius.circular(8), // 少し丸みを帯びた四角いボタン
+            alignment: const Alignment(0.33, -0.55),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.orange, // ボタンの背景色をオレンジに設定
+                borderRadius: BorderRadius.circular(8), // 少し丸みを帯びた四角いボタン
+              ),
+              child: IconButton(
+                onPressed: () {
+                  setState(() {
+                    isPostCancel = true;
+                  });
+                  // isPostCancel = true;
+                  debugPrint('Postをキャンセルしようとしてる');
+                },
+                icon: const Icon(
+                  Icons.clear,
+                  color: Colors.white, // アイコンの色を白に設定
                 ),
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isPostCancel = true;
-                    });
-                    // isPostCancel = true;
-                    debugPrint('Postをキャンセルしようとしてる');
-                  },
-                  icon: const Icon(
-                    Icons.clear,
-                    color: Colors.white, // アイコンの色を白に設定
-                  ),
-                  padding: EdgeInsets.all(10), // ボタン内の余白
-                  iconSize: 30, // アイコンのサイズ調整
-                ),
-              )),
+                padding: const EdgeInsets.all(10), // ボタン内の余白
+                iconSize: 30, // アイコンのサイズ調整
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -563,7 +505,7 @@ class _ResultFlashCard extends ConsumerState<ResultFlashCard>
 
 Widget _buildCustomButton({
   required String label,
-  required VoidCallback? onPressed,
+  required void Function()? onPressed,
 }) {
   return Container(
     decoration: BoxDecoration(
@@ -598,11 +540,4 @@ Widget _buildCustomButton({
       ),
     ),
   );
-}
-
-class ResultCard {
-  final String question;
-  final String answer;
-
-  ResultCard({required this.question, required this.answer});
 }

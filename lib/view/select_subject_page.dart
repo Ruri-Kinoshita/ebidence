@@ -83,8 +83,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                         ref.read(modeProvider.notifier).state = 'ebimode';
 
                         // 全ての問題リストを取得
-                        final allEbiQuestions =
-                            QuizData.ebiQuizData.keys.toList();
+                        final allEbiQuestions = QuizData.ebiQuiz;
 
                         // 5つのランダムな問題を生成してリバーポッドに保存
                         ref
@@ -93,8 +92,10 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
 
                         // ランダムに選ばれた問題をデバッグプリント
                         final selectedQuestions = ref.read(quizProvider);
+                        ref.read(currentQuestionIndexProvider.notifier).state =
+                            0;
                         print("ランダムに選ばれた問題: $selectedQuestions");
-                        router.go('/quiz1');
+                        router.go('/quiz/0');
                       },
                       child: const Text(
                         'LEVEL EBI',
@@ -220,8 +221,7 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                                           'level1mode';
 
                                       // 全ての問題リストを取得
-                                      final allL1Questions =
-                                          QuizData.l1QuizData.keys.toList();
+                                      final allL1Questions = QuizData.l1Quiz;
 
                                       // 5つのランダムな問題を生成してリバーポッドに保存
                                       ref
@@ -232,8 +232,12 @@ class _SelectSubjectPageState extends ConsumerState<SelectSubjectPage> {
                                       // ランダムに選ばれた問題をデバッグプリント
                                       final selectedQuestions =
                                           ref.read(quizProvider);
+                                      ref
+                                          .read(currentQuestionIndexProvider
+                                              .notifier)
+                                          .state = 0;
                                       print("ランダムに選ばれた問題: $selectedQuestions");
-                                      router.go('/quiz1');
+                                      router.go('/quiz/0');
                                     },
                                     child: const Text(
                                       'LEVEL 1',

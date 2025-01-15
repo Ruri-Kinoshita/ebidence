@@ -217,7 +217,7 @@ class _PostImageState extends ConsumerState<PostImage> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            quiz[i],
+                                            quiz[i].question,
                                             //'あいうえお',
                                             style: const TextStyle(
                                                 color: Colors.black,
@@ -227,8 +227,7 @@ class _PostImageState extends ConsumerState<PostImage> {
                                           ),
                                           const SizedBox(height: 16),
                                           Text(
-                                            QuizData.ebiQuizData[quiz[i]]
-                                                .toString(),
+                                            quiz[i].answer,
                                             //'aiueo',
                                             style: const TextStyle(
                                                 color: Colors.red,

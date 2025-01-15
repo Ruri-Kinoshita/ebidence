@@ -4,12 +4,7 @@ import 'package:ebidence/view/result_card.dart';
 import 'package:ebidence/view/result_card_row.dart';
 import 'package:ebidence/view/select_subject_page.dart';
 import 'package:ebidence/view/start_page.dart';
-import 'package:ebidence/viewmodel/beforequiz.dart';
-import 'package:ebidence/viewmodel/quiz1.dart';
-import 'package:ebidence/viewmodel/quiz2.dart';
-import 'package:ebidence/viewmodel/quiz3.dart';
-import 'package:ebidence/viewmodel/quiz4.dart';
-import 'package:ebidence/viewmodel/quiz5.dart';
+import 'package:ebidence/viewmodel/quiz.dart';
 import 'package:ebidence/viewmodel/result.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,39 +16,9 @@ final router = GoRouter(
     initialLocation: '/startpage',
     routes: [
       GoRoute(
-        path: '/beforequiz',
+        path: '/quiz/:quizIndex',
         builder: (context, state) {
-          return const Beforequiz();
-        },
-      ),
-      GoRoute(
-        path: '/quiz1',
-        builder: (context, state) {
-          return const Quiz1();
-        },
-      ),
-      GoRoute(
-        path: '/quiz2',
-        builder: (context, state) {
-          return const Quiz2();
-        },
-      ),
-      GoRoute(
-        path: '/quiz3',
-        builder: (context, state) {
-          return const Quiz3();
-        },
-      ),
-      GoRoute(
-        path: '/quiz4',
-        builder: (context, state) {
-          return const Quiz4();
-        },
-      ),
-      GoRoute(
-        path: '/quiz5',
-        builder: (context, state) {
-          return const Quiz5();
+          return const QuizScreen();
         },
       ),
       GoRoute(

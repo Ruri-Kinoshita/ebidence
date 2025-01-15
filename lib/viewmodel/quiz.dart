@@ -2,7 +2,6 @@ import 'package:ebidence/constant/aor.dart';
 import 'package:ebidence/constant/app_color.dart';
 import 'package:ebidence/constant/quiz_data.dart';
 import 'package:ebidence/routes.dart';
-import 'package:ebidence/view/result_card.dart';
 import 'package:ebidence/viewmodel/ebidence_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,25 +9,27 @@ import 'package:ebidence/provider/quiz_provider.dart';
 import 'package:gif/gif.dart';
 import 'dart:math';
 
-class Quiz4 extends ConsumerStatefulWidget {
-  const Quiz4({super.key});
+class QuizScreen extends ConsumerStatefulWidget {
+  const QuizScreen({super.key});
 
   @override
-  ConsumerState<Quiz4> createState() => _QuizState();
+  ConsumerState<QuizScreen> createState() => _QuizScreenState();
 }
 
-class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
+class _QuizScreenState extends ConsumerState<QuizScreen>
+    with TickerProviderStateMixin {
   final _controller = TextEditingController();
   final _feedback = ValueNotifier<String>('');
   bool isTextEnabled = true;
+// ボタンの状態を制御
   bool _isButtonPressed = false; // Track if button is pressed
-  List<ResultCard> resultCards = [];
 
   late GifController _gifController;
   bool _isGifInitialized = false;
 
   bool? isCheckTrue;
   String _randomGifName = 'real';
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +41,18 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
       if (_gifController.value == 1) {
         _goToNextQuestion();
       }
+    });
+  }
+
+  void init() {
+    setState(() {
+      _controller.clear();
+      _feedback.value = '';
+      isTextEnabled = true;
+      _isButtonPressed = false;
+      isCheckTrue = null;
+      _randomGifName = 'real';
+      _gifController.reset();
     });
   }
 
@@ -59,21 +72,20 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _checkAnswer(String currentQuestion) {
+  void _checkAnswer(Quiz currentQuestion) {
     setState(() {
       isTextEnabled = false;
       _isButtonPressed = true;
     });
-    final correctAnswer = QuizData.ebiQuizData[currentQuestion];
-    if (_controller.text.trim().toLowerCase() == correctAnswer?.toLowerCase()) {
+    if (_controller.text.trim().toLowerCase() ==
+        currentQuestion.answer.toLowerCase()) {
       _feedback.value = '正解！';
-      debugPrint('正解');
       ref.read(quizResultProvider.notifier).update((state) => [...state, true]);
       setState(() {
         isCheckTrue = true;
       });
     } else {
-      _feedback.value = '不正解。正しい答えは: $correctAnswer';
+      _feedback.value = '不正解。正しい答えは: ${currentQuestion.answer}';
       ref
           .read(quizResultProvider.notifier)
           .update((state) => [...state, false]);
@@ -84,38 +96,6 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
     }
 
     if (_isGifInitialized) {
-      print("Playing GIF 4");
-      _gifController
-        ..reset()
-        ..forward(); // GIFの再生
-    }
-  }
-
-  void _l1CheckAnswer(String currentQuestion) {
-    setState(() {
-      isTextEnabled = false;
-      _isButtonPressed = true;
-    });
-    final correctAnswer = QuizData.l1QuizData[currentQuestion];
-    if (_controller.text.trim().toLowerCase() == correctAnswer?.toLowerCase()) {
-      _feedback.value = '正解！';
-      ref.read(quizResultProvider.notifier).update((state) => [...state, true]);
-      setState(() {
-        isCheckTrue = true;
-      });
-    } else {
-      _feedback.value = '不正解。正しい答えは: $correctAnswer';
-      ref
-          .read(quizResultProvider.notifier)
-          .update((state) => [...state, false]);
-      setState(() {
-        isCheckTrue = false;
-        _randomGifName = _getRandomGifName();
-      });
-    }
-
-    if (_isGifInitialized) {
-      print("Playing GIF 4");
       _gifController
         ..reset()
         ..forward(); // GIFの再生
@@ -124,21 +104,35 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
 
   void _goToNextQuestion() {
     final currentIndex = ref.read(currentQuestionIndexProvider);
-    final totalQuestions = ref.read(quizProvider).length;
+    final quiz = ref.watch(quizProvider);
 
     // 次の問題へ進む
-    if (currentIndex + 1 < totalQuestions) {
+    if (currentIndex + 1 < quiz.length) {
       ref.read(currentQuestionIndexProvider.notifier).state = currentIndex + 1;
-      router.go('/quiz5');
+      router.go('/quiz/${currentIndex + 1}');
+      init();
     } else {
       // もし最後の問題に到達した場合は次の画面へ
-      router.go('/quiz5'); // TODO:史上最悪の実装
+      final resultCardList = ref.watch(resultCardListProvider);
+      final quizResults = ref.watch(quizResultProvider);
+      if (resultCardList.isEmpty && quiz.isNotEmpty) {
+        List<Quiz> uncorrectedQuiz = [];
+        for (var i = 0; i < quiz.length; i++) {
+          if (quizResults[i] == false) {
+            uncorrectedQuiz.add(quiz[i]);
+          }
+        }
+        ref.read(resultCardListProvider.notifier).setQuizList(uncorrectedQuiz);
+      }
+
+      router.go('/result_flash_card'); // 例えばクイズ終了画面に遷移
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentQuestion = ref.watch(currentQuestionProvider);
+    final currentIndex = ref.watch(currentQuestionIndexProvider);
+    final quiz = ref.watch(quizProvider);
     final double deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: PreferredSize(
@@ -158,11 +152,11 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
                   ),
                   const SizedBox(height: 30),
                   Text(
-                    '4 / 5',
+                    '${currentIndex + 1} / 5',
                     style: TextStyle(fontSize: 25, color: AppColor.text.gray),
                   ),
                   Text(
-                    currentQuestion,
+                    quiz[currentIndex].question,
                     style: const TextStyle(
                         fontSize: 150, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
@@ -177,19 +171,14 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
                     ),
                     child: TextField(
                       controller: _controller,
-                      enabled: isTextEnabled,
                       autofocus: true,
+                      enabled: isTextEnabled,
                       onSubmitted: (_) {
                         if (!_isButtonPressed) {
                           setState(() {
                             _isButtonPressed = true; // ボタンを押せないようにする
                           });
-                          final mode = ref.read(modeProvider); // 現在のモードを取得
-                          if (mode == 'ebimode') {
-                            _checkAnswer(currentQuestion);
-                          } else if (mode == 'level1mode') {
-                            _l1CheckAnswer(currentQuestion);
-                          }
+                          _checkAnswer(quiz[currentIndex]);
                         }
                       },
                       cursorColor: AppColor.brand.secondary,
@@ -233,18 +222,9 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
                         elevation: 0, // ElevatedButtonの標準影をオフ
                       ),
                       onPressed: _isButtonPressed
-                          ? null // Disable button if already pressed
+                          ? null // ボタンが無効化されている場合
                           : () {
-                              setState(() {
-                                _isButtonPressed =
-                                    true; // Disable button on press
-                              });
-                              final mode = ref.read(modeProvider); // 現在のモードを取得
-                              if (mode == 'ebimode') {
-                                _checkAnswer(currentQuestion);
-                              } else if (mode == 'level1mode') {
-                                _l1CheckAnswer(currentQuestion);
-                              }
+                              _checkAnswer(quiz[currentIndex]);
                             },
                       child: const Text(
                         '回答',
@@ -261,7 +241,7 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
             ),
             if (isCheckTrue == null) ...[
               Align(
-                alignment: Alignment(0.9, 1),
+                alignment: const Alignment(0.9, 1),
                 child: Gif(
                   controller: _gifController,
                   image: const AssetImage('assets/gifs/aor_cam1.gif'),
@@ -273,7 +253,7 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
             ],
             if (_isGifInitialized && isCheckTrue == true) ...[
               Align(
-                alignment: Alignment(0.9, 1),
+                alignment: const Alignment(0.9, 1),
                 child: Gif(
                   controller: _gifController,
                   image: const AssetImage('assets/gifs/evi_happy.gif'),
@@ -284,7 +264,7 @@ class _QuizState extends ConsumerState<Quiz4> with TickerProviderStateMixin {
               ),
             ] else if (_isGifInitialized && isCheckTrue == false) ...[
               Align(
-                alignment: Alignment(0.9, 1),
+                alignment: const Alignment(0.9, 1),
                 child: Gif(
                   controller: _gifController,
                   image: AssetImage('assets/gifs/aor_$_randomGifName.gif'),
